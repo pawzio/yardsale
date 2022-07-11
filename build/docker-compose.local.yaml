@@ -1,0 +1,11 @@
+version: "3.9"
+services:
+  catalog-go:
+    volumes:
+      - ../catalog/:/code:cached
+      - catalog-code-cache:/root/.cache/go-build
+    ports:
+      - "9000:9000"
+volumes:
+  catalog-code-cache:
+    name: ${PROJECT_NAME}-catalog-code-cache
