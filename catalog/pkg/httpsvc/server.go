@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -15,7 +16,7 @@ type Server struct {
 }
 
 // NewServer returns a new instance of server
-func NewServer(handler http.Handler) (*Server, error) {
+func NewServer(handler http.Handler, opts ...ServerOption) (*Server, error) {
 	srv := &http.Server{
 		Addr:              ":3000", // TODO: Look into this
 		Handler:           handler, // TODO: Look into this
@@ -27,7 +28,15 @@ func NewServer(handler http.Handler) (*Server, error) {
 		// ConnContext:       nil, // TODO: Look into this
 	}
 
-	return &Server{srv: srv}, nil
+	s := &Server{srv: srv, shutdownGrace: 10 * time.Second}
+
+	for _, opt := range opts {
+		if err := opt(s); err != nil {
+			return nil, err
+		}
+	}
+
+	return s, nil
 }
 
 func (s *Server) Start(ctx context.Context) error {
@@ -71,4 +80,19 @@ func (s *Server) stop() error {
 	log.Println("Server shutdown successfully!")
 
 	return nil
+}
+
+// ServerOption is an optional config used to modify the server's behaviour
+type ServerOption func(*Server) error
+
+// WithServerPort overrides the server's default port with the given port
+func WithServerPort(port string) ServerOption {
+	return func(s *Server) error {
+		if _, err := strconv.Atoi(port); err != nil {
+			return fmt.Errorf("invalid port. err: %w", err)
+		}
+
+		s.srv.Addr = fmt.Sprintf(":%s", port)
+		return nil
+	}
 }
