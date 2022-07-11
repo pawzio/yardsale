@@ -1,5 +1,5 @@
-catalog-api-run:
-	${COMPOSE_CMD} run --rm --service-ports catalog-go sh -c "go run main.go"
+catalog-run-api:
+	${COMPOSE_CMD} run --rm --service-ports catalog-go sh -c "go run cmd/serverd/*.go"
 
 catalog-test:
 	${COMPOSE_CMD} run --rm catalog-go sh -c "go test -coverprofile=c.out -failfast -timeout 5m ./..."
