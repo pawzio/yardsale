@@ -16,10 +16,10 @@ type Server struct {
 }
 
 // NewServer returns a new instance of server
-func NewServer(handler http.Handler, opts ...ServerOption) (*Server, error) {
+func NewServer(readinessHandler ErrHandlerFunc, routes func(*Router), opts ...ServerOption) (*Server, error) {
 	srv := &http.Server{
-		Addr:              ":3000", // TODO: Look into this
-		Handler:           handler, // TODO: Look into this
+		Addr:              ":3000",
+		Handler:           prepareHandler(readinessHandler, routes),
 		ReadTimeout:       5 * time.Second,
 		ReadHeaderTimeout: 2 * time.Second,
 		WriteTimeout:      30 * time.Second,
