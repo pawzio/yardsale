@@ -1,0 +1,36 @@
+name: "CI"
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+jobs:
+  catalog:
+    runs-on: ubuntu-latest
+    env:
+      SVC_NAME: catalog
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Run Unit Tests
+        run: make $SVC_NAME-test
+      - name: Generate Codacy Coverage Report
+        run: make generate-codacy-coverage-report-go
+      - name: Send partial Coverage Report to Codacy
+        env:
+          CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
+        shell: bash
+        run: |
+          bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
+          --force-coverage-parser go -r $SVC_NAME/filtered-coverage.out \
+          --partial
+  final-coverage:
+    needs: [catalog]
+    runs-on: ubuntu-latest
+    env:
+      CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
+    steps:
+      - name: Send Final Coverage Report to Codacy
+        shell: bash
+        run: |
+          bash <(curl -Ls https://coverage.codacy.com/get.sh) final
