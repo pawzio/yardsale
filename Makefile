@@ -16,4 +16,4 @@ ifndef DOCKER_COMPOSE_BIN:
 DOCKER_COMPOSE_BIN := docker-compose
 endif
 
-COMPOSE := PROJECT_NAME=${PROJECT_NAME} ${DOCKER_COMPOSE_BIN} -f build/docker-compose.base.yaml -f build/docker-compose.local.yaml -p ${PROJECT_NAME}
+COMPOSE := PROJECT_NAME=${PROJECT_NAME} ${DOCKER_COMPOSE_BIN} -f build/docker-compose.base.yaml -p ${PROJECT_NAME}

@@ -5,7 +5,12 @@ services:
     image: golang:1.18-alpine
     networks:
       - main
+    volumes:
+      - ../catalog/:/code:cached
+      - catalog-code-cache:/root/.cache/go-build
     working_dir: /code
+    ports:
+      - "9000:9000"
     environment:
       TZ: UTC
       CGO_ENABLED: 0
@@ -14,3 +19,6 @@ services:
 networks:
   main:
     name: ${PROJECT_NAME}
+volumes:
+  catalog-code-cache:
+    name: ${PROJECT_NAME}-catalog-code-cache
