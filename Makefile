@@ -1,8 +1,10 @@
 catalog-run-api:
 	${COMPOSE_CMD} run --rm --service-ports catalog-go sh -c "go run cmd/serverd/*.go"
-
 catalog-test:
 	${COMPOSE_CMD} run --rm catalog-go sh -c "go test -coverprofile=c.out -failfast -timeout 5m ./..."
+catalog-go-vendor:
+	${COMPOSE_CMD} run --rm catalog-go sh -c "go mod tidy && go mod vendor"
+catalog-setup: catalog-go-vendor
 
 generate-codacy-coverage-report-go:
 	cat ${SVC_NAME}/c.out > ${SVC_NAME}/filtered-coverage.out

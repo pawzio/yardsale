@@ -45,7 +45,7 @@ func TestNewServer(t *testing.T) {
 	for name, tc := range tcs {
 		t.Run(name, func(t *testing.T) {
 			// Given && When:
-			s, err := NewServer(nil, tc.givenOpts...)
+			s, err := NewServer(nil, nil, tc.givenOpts...)
 
 			// Then:
 			if tc.expErr {
