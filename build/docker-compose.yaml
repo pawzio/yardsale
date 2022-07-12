@@ -10,7 +10,7 @@ services:
       - catalog-code-cache:/root/.cache/go-build
     working_dir: /code
     ports:
-      - "9000:9000"
+      - "3000:3000"
     environment:
       TZ: UTC
       CGO_ENABLED: 0

@@ -12,6 +12,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+      - name: Setup
+        run: make $SVC_NAME-setup
       - name: Run Unit Tests
         run: make $SVC_NAME-test
       - name: Generate Codacy Coverage Report
