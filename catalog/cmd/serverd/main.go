@@ -13,7 +13,7 @@ func main() {
 
 	ctx := context.Background()
 
-	srv, err := httpsvc.NewServer(nil, routes)
+	srv, err := httpsvc.NewServer(readinessHandler(), routes)
 	if err != nil {
 		log.Fatal(err)
 	}
