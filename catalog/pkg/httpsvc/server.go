@@ -17,9 +17,14 @@ type Server struct {
 
 // NewServer returns a new instance of server
 func NewServer(readinessHandler ErrHandlerFunc, routes func(*Router), opts ...ServerOption) (*Server, error) {
+	handler, err := prepareHandler(readinessHandler, routes)
+	if err != nil {
+		return nil, err
+	}
+
 	srv := &http.Server{
 		Addr:              ":3000",
-		Handler:           prepareHandler(readinessHandler, routes),
+		Handler:           handler,
 		ReadTimeout:       5 * time.Second,
 		ReadHeaderTimeout: 2 * time.Second,
 		WriteTimeout:      30 * time.Second,
@@ -39,6 +44,7 @@ func NewServer(readinessHandler ErrHandlerFunc, routes func(*Router), opts ...Se
 	return s, nil
 }
 
+// Start starts the server
 func (s *Server) Start(ctx context.Context) error {
 	// Make a channel to listen for errors coming from the listener. Use a
 	// buffered channel so the goroutine can exit if we don't collect this error.

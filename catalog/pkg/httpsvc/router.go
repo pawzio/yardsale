@@ -1,6 +1,7 @@
 package httpsvc
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"net/http/pprof"
@@ -44,7 +45,11 @@ func (r *Router) Group(fn func(r *Router)) {
 	})
 }
 
-func prepareHandler(readinessHandler ErrHandlerFunc, routes func(*Router)) http.Handler {
+func prepareHandler(readinessHandler ErrHandlerFunc, routes func(*Router)) (chi.Router, error) {
+	if readinessHandler == nil {
+		return nil, errors.New("readiness handler not provided")
+	}
+
 	r := chi.NewRouter()
 
 	r.Get(toolPrefix+"/healthz", func(w http.ResponseWriter, r *http.Request) {
@@ -55,15 +60,17 @@ func prepareHandler(readinessHandler ErrHandlerFunc, routes func(*Router)) http.
 	r.Get(toolPrefix+"/ready", handleErrHF(readinessHandler))
 	pprofRoutes(r)
 
-	r.Group(func(r chi.Router) {
-		routes(&Router{r: r})
-	})
+	if routes != nil {
+		r.Group(func(r chi.Router) {
+			routes(&Router{r: r})
+		})
+	}
 
-	return r
+	return r, nil
 }
 
 func pprofRoutes(r chi.Router) {
-	prefix := toolPrefix + "/profile"
+	const prefix = toolPrefix + "/profile"
 	r.HandleFunc(prefix+"/*", pprof.Index)
 	r.HandleFunc(prefix+"/cmdline", pprof.Cmdline)
 	r.HandleFunc(prefix+"/profile", pprof.Profile)

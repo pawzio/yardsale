@@ -25,6 +25,7 @@ func WriteJSON(_ context.Context, w http.ResponseWriter, obj interface{}) {
 		}
 	case error:
 		obj = ErrUnexpectedInternal
+		status = http.StatusInternalServerError
 	default:
 		status = http.StatusOK
 	}

@@ -2,6 +2,7 @@ package httpsvc
 
 import (
 	"fmt"
+	"net/http"
 	"testing"
 	"time"
 
@@ -45,7 +46,9 @@ func TestNewServer(t *testing.T) {
 	for name, tc := range tcs {
 		t.Run(name, func(t *testing.T) {
 			// Given && When:
-			s, err := NewServer(nil, nil, tc.givenOpts...)
+			s, err := NewServer(func(http.ResponseWriter, *http.Request) error {
+				return nil
+			}, nil, tc.givenOpts...)
 
 			// Then:
 			if tc.expErr {
