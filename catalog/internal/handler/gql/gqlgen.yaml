@@ -1,0 +1,13 @@
+schema:
+  - schema/*.graphql
+
+exec:
+  filename: gqlgenerated.go
+  package: gql
+
+skip_validation: true
+skip_mod_tidy: true
+
+#models:
+#  Int64:
+#    model: ??
